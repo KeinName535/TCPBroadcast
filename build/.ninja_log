@@ -1,0 +1,25 @@
+# ninja log v5
+1	297	1668768789888403452	sockpp/src/CMakeFiles/sockpp-objs.dir/exception.cpp.o	741eca8f80844932
+1	426	1668768790016402441	sockpp/src/CMakeFiles/sockpp-objs.dir/inet_address.cpp.o	6a464513425b49e9
+1	438	1668768790028402347	CMakeFiles/TCP_Server.dir/TCPSockServer/main.cpp.o	226ef565b4c5c005
+1	470	1668768790060402094	sockpp/src/CMakeFiles/sockpp-objs.dir/inet6_address.cpp.o	f1031e09c11854b8
+1	495	1668768790088401873	sockpp/src/CMakeFiles/sockpp-objs.dir/datagram_socket.cpp.o	43b8d0f4a02ee331
+2	511	1668768790104401746	sockpp/src/CMakeFiles/sockpp-objs.dir/stream_socket.cpp.o	614256a2f14d7b80
+1	524	1668768790116401652	sockpp/src/CMakeFiles/sockpp-objs.dir/socket.cpp.o	5b73407040379c9
+1	532	1668768790124401588	sockpp/src/CMakeFiles/sockpp-objs.dir/acceptor.cpp.o	6b3db9a1d19ec75d
+1	542	1668768790132401525	sockpp/src/CMakeFiles/sockpp-objs.dir/connector.cpp.o	193514ee25257a1b
+3	557	1668768790148401399	sockpp/src/CMakeFiles/sockpp-objs.dir/unix/unix_address.cpp.o	1cd245a8dad9269c
+557	613	1668768790204400957	sockpp/libsockpp.so.0.7.1	c89e8c990e030920
+613	620	1668768790204400957	sockpp/libsockpp.so.0	75416e0cf02828e3
+613	620	1668768790204400957	sockpp/libsockpp.so	75416e0cf02828e3
+620	667	1668768790256400547	TCP_Server	670f2beb8ae6bc27
+1	167	1668768939439161764	CMakeFiles/TCP_Client.dir/TCPSockServer/main.cpp.o	6d4c68ed84767f0
+168	207	1668768939479161417	TCP_Client	1776dc4fbc568a65
+1	159	1668769096349750923	CMakeFiles/TCP_Client.dir/TCPSockServer/main.cpp.o	6d4c68ed84767f0
+159	199	1668769096389750551	TCP_Client	1776dc4fbc568a65
+1	162	1668769111069613961	CMakeFiles/TCP_Server.dir/TCPSockServer/main.cpp.o	226ef565b4c5c005
+162	202	1668769111109613587	TCP_Server	670f2beb8ae6bc27
+1	178	1668769263020163204	CMakeFiles/TCP_Client.dir/TCPSockServer/main.cpp.o	6d4c68ed84767f0
+178	216	1668769263056162854	TCP_Client	1776dc4fbc568a65
+0	172	1668769307999722419	CMakeFiles/TCP_Client.dir/TCPSockCLient/main.cpp.o	17212217bf78b177
+172	213	1668769308039722025	TCP_Client	b786a2dab1f2c318
