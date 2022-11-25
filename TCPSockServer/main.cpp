@@ -15,8 +15,12 @@ void error(const char *msg)
 
 int main(int argc, char *argv[])
 {
+    std::cout<<"started Server"<<std::endl;
+   
      int sockfd, newsockfd, portno;
+     fd_set main;
      socklen_t clilen;
+     FD_ZERO(&main);
      char buffer[256];
      struct sockaddr_in serv_addr, cli_addr;
      int n;
@@ -28,8 +32,12 @@ int main(int argc, char *argv[])
      // create a socket
      // socket(int domain, int type, int protocol)
      sockfd =  socket(AF_INET, SOCK_STREAM, 0);
+    std::cout<<"socket created"<<sockfd<<std::endl;
+
      if (sockfd < 0) {
         error("ERROR opening socket");}
+
+    
 
      // clear address structure
      bzero((char *) &serv_addr, sizeof(serv_addr));
@@ -53,40 +61,73 @@ int main(int argc, char *argv[])
      if (bind(sockfd, (struct sockaddr *) &serv_addr,
               sizeof(serv_addr)) < 0) 
               error("ERROR on binding");
+    std::cout<<"61"<<std::endl;
 
-     // This listen() call tells the socket to listen to the incoming connections.
-     // The listen() function places all incoming connection into a backlog queue
-     // until accept() call accepts the connection.
-     // Here, we set the maximum size for the backlog queue to 5.
-     listen(sockfd,5);
+    FD_SET(sockfd, &main);
 
-     // The accept() call actually accepts an incoming connection
-     clilen = sizeof(cli_addr);
+    bool RUNNING = true;
 
-     // This accept() function will write the connecting client's address info 
-     // into the the address structure and the size of that structure is clilen.
-     // The accept() returns a new socket file descriptor for the accepted connection.
-     // So, the original socket file descriptor can continue to be used 
-     // for accepting new connections while the new socker file descriptor is used for
-     // communicating with the connected client.
-     newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-     if (newsockfd < 0){ 
-          error("ERROR on accept");}
 
-    printf("server: got connection from %s port %d\n");
-          // inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port)
+    // This listen() call tells the socket to listen to the incoming connections.
+        // The listen() function places all incoming connection into a backlog queue
+        // until accept() call accepts the connection.
+        // Here, we set the maximum size for the backlog queue to 5.
+    listen(sockfd, 4);
+    std::cout<<"listening"<<std::endl;
 
-     // This send() function sends the 13 bytes of the string to the new socket
-     send(newsockfd, "Hello, world!\n", 13, 0);
+    while(RUNNING){
+        fd_set tmp = main;
+        std::cout<<"tmp_set"<<std::endl;
+        
+        int count = select(1, &tmp, nullptr,nullptr,nullptr);
+        std::cout<<"be for "<<std::endl;
 
-     bzero(buffer,256);
+        clilen = sizeof(cli_addr);
 
-     n = read(newsockfd,buffer,255);
-     if (n < 0){ 
-        error("ERROR reading from socket");}
+        for (int i = 0; i < FD_SETSIZE-1; i++)
+        {
+            std::cout<<"iterating through fds"<<i<<std::endl;
 
-     std::cout<<"Here is the message: %s\n"<<buffer;
+            if(FD_ISSET(i, &tmp)){
+                if(i==0){
+                    // This accept() function will write the connecting client's address info 
+                    // into the the address structure and the size of that structure is clilen.
+                    // The accept() returns a new socket file descriptor for the accepted connection.
+                    // So, the original socket file descriptor can continue to be used 
+                    // for accepting new connections while the new socker file descriptor is used for
+                    // communicating with the connected client.
+                    newsockfd = accept(i, (struct sockaddr *) &cli_addr, &clilen);
+                    if (newsockfd < 0){ 
+                        error("ERROR on accept");}
+                        printf("server: got connection from %s port %d\n");
+                    FD_SET(newsockfd, &main);
 
+                    listen(newsockfd, 1);
+                    // This send() function sends the 13 bytes of the string to the new socket
+                    send(newsockfd, "Hello, world!\n", 13, 0);
+                }else{
+                    bzero(buffer,256);
+
+                    n = read(i,buffer,255);
+                    if (n < 0){ 
+                        error("ERROR reading from socket");}
+
+                    std::cout<<"Here is the message: %s\n"<<buffer;
+
+                }
+
+            }
+        }
+        
+        // inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port)
+        for (int i = 0; i < FD_SETSIZE-1; i++)
+        {
+            close(i);
+        }
+        
+        
+        RUNNING=false;
+    }
      close(newsockfd);
      close(sockfd);
      return 0; 
