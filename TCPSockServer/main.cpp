@@ -5,13 +5,28 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/select.h>
-
+#include<vector>
 
 void error(const char *msg)
 {
     perror(msg);
     exit(1);
 }
+std::vector<int> getQueue(fd_set *fdset, int sockfdC){
+
+    std::vector<int> *queue = new std::vector<int>;
+    select(sockfdC+1, fdset, nullptr,nullptr,nullptr);
+    for (int i = 0; i < FD_SETSIZE-1; i++)
+    {
+        if(FD_ISSET(i, fdset)){
+            queue->push_back(i);
+        }
+    }
+
+    return *queue;
+    
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -79,32 +94,41 @@ int main(int argc, char *argv[])
         fd_set tmp = main;
         std::cout<<"tmp_set"<<std::endl;
         
-        int count = select(1, &tmp, nullptr,nullptr,nullptr);
-        std::cout<<"be for "<<std::endl;
+        std::vector<int> queue = getQueue(&tmp, sockfd);
+        
 
         clilen = sizeof(cli_addr);
 
-        for (int i = 0; i < FD_SETSIZE-1; i++)
+        for (int i = 0; i < queue.size(); i++)
         {
-            std::cout<<"iterating through fds"<<i<<std::endl;
+            
 
-            if(FD_ISSET(i, &tmp)){
-                if(i==0){
+        
+                if(queue[i]==sockfd){
+
+                    std::cout<<queue[i]<<std::endl;
                     // This accept() function will write the connecting client's address info 
                     // into the the address structure and the size of that structure is clilen.
                     // The accept() returns a new socket file descriptor for the accepted connection.
                     // So, the original socket file descriptor can continue to be used 
                     // for accepting new connections while the new socker file descriptor is used for
                     // communicating with the connected client.
-                    newsockfd = accept(i, (struct sockaddr *) &cli_addr, &clilen);
+                    newsockfd = accept(queue[i], (struct sockaddr *) &cli_addr, &clilen);
                     if (newsockfd < 0){ 
                         error("ERROR on accept");}
-                        printf("server: got connection from %s port %d\n");
+                    std::cout<<"connection on main socket"<<std::endl;
                     FD_SET(newsockfd, &main);
 
                     listen(newsockfd, 1);
+                   
                     // This send() function sends the 13 bytes of the string to the new socket
                     send(newsockfd, "Hello, world!\n", 13, 0);
+                    bzero(buffer,256);
+                    n = read(newsockfd,buffer,255);
+                    if (n < 0){ 
+                        error("ERROR reading from socket");}
+
+                    std::cout<<"Here is the message:"<<buffer<<std::endl;
                 }else{
                     bzero(buffer,256);
 
@@ -112,11 +136,11 @@ int main(int argc, char *argv[])
                     if (n < 0){ 
                         error("ERROR reading from socket");}
 
-                    std::cout<<"Here is the message: %s\n"<<buffer;
+                    std::cout<<"Here is the message:"<<buffer;
 
                 }
 
-            }
+            
         }
         
         // inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port)

@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
          error("ERROR reading from socket");}
 
 
-    std::cout<<"%s\n"<<buffer;
+    std::cout<<buffer;
     close(sockfd);
     return 0;
 }
