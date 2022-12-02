@@ -12,6 +12,8 @@ void error(const char *msg)
     perror(msg);
     exit(1);
 }
+
+
 std::vector<int> getQueue(fd_set *fdset, int sockfdC){
 
     std::vector<int> *queue = new std::vector<int>;
@@ -20,9 +22,9 @@ std::vector<int> getQueue(fd_set *fdset, int sockfdC){
     {
         if(FD_ISSET(i, fdset)){
             queue->push_back(i);
+            std::cout<<"connected fd ==>"<<i<<std::endl;
         }
     }
-
     return *queue;
     
 }
@@ -47,7 +49,7 @@ int main(int argc, char *argv[])
      // create a socket
      // socket(int domain, int type, int protocol)
      sockfd =  socket(AF_INET, SOCK_STREAM, 0);
-    std::cout<<"socket created"<<sockfd<<std::endl;
+    std::cout<<"socket created "<<sockfd<<std::endl;
 
      if (sockfd < 0) {
         error("ERROR opening socket");}
@@ -76,7 +78,6 @@ int main(int argc, char *argv[])
      if (bind(sockfd, (struct sockaddr *) &serv_addr,
               sizeof(serv_addr)) < 0) 
               error("ERROR on binding");
-    std::cout<<"61"<<std::endl;
 
     FD_SET(sockfd, &main);
 
@@ -88,21 +89,23 @@ int main(int argc, char *argv[])
         // until accept() call accepts the connection.
         // Here, we set the maximum size for the backlog queue to 5.
     listen(sockfd, 4);
-    std::cout<<"listening"<<std::endl;
 
+    int size = sockfd;
     while(RUNNING){
         fd_set tmp = main;
-        std::cout<<"tmp_set"<<std::endl;
+
+        
         
         std::vector<int> queue = getQueue(&tmp, sockfd);
         
 
         clilen = sizeof(cli_addr);
 
+        std::cout<<queue.size()<<std::endl;
         for (int i = 0; i < queue.size(); i++)
         {
             
-
+            std::cout<<"for";
         
                 if(queue[i]==sockfd){
 
@@ -117,10 +120,10 @@ int main(int argc, char *argv[])
                     if (newsockfd < 0){ 
                         error("ERROR on accept");}
                     std::cout<<"connection on main socket"<<std::endl;
-                    FD_SET(newsockfd, &main);
 
                     listen(newsockfd, 1);
-                   
+                    FD_SET(newsockfd, &main);
+
                     // This send() function sends the 13 bytes of the string to the new socket
                     send(newsockfd, "Hello, world!\n", 13, 0);
                     bzero(buffer,256);
@@ -128,15 +131,26 @@ int main(int argc, char *argv[])
                     if (n < 0){ 
                         error("ERROR reading from socket");}
 
-                    std::cout<<"Here is the message:"<<buffer<<std::endl;
+                    std::cout<<"Here is the message:"<<buffer<<"   on:"<<newsockfd<<std::endl;
+
+                    size = newsockfd;
                 }else{
                     bzero(buffer,256);
-
-                    n = read(i,buffer,255);
+                    std::cout<<"here motherfucka ==> " <<queue[i]<<std::endl;
+                    n = recv(i,buffer,sizeof(buffer), 0);
                     if (n < 0){ 
                         error("ERROR reading from socket");}
+                    
+                    std::cout<<buffer;
 
-                    std::cout<<"Here is the message:"<<buffer;
+                    for (int j = 0; j < queue.size(); j++)
+                    {
+                        if(!((queue[j]==queue[i])||(queue[j]==sockfd))){
+
+                            send(queue[j], buffer, 13, 0);
+                        }
+                    }
+                    
 
                 }
 
@@ -144,15 +158,16 @@ int main(int argc, char *argv[])
         }
         
         // inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port)
-        for (int i = 0; i < FD_SETSIZE-1; i++)
+        
+        
+        
+       // RUNNING=false;
+    }
+    for (int i = 0; i < FD_SETSIZE-1; i++)
         {
             close(i);
         }
-        
-        
-        RUNNING=false;
-    }
-     close(newsockfd);
-     close(sockfd);
+     
+
      return 0; 
 }

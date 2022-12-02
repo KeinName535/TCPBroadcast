@@ -71,6 +71,16 @@ int main(int argc, char *argv[])
 
 
     std::cout<<buffer;
+    bool RUNNING = true;
+    while(RUNNING){
+        char* buf = new char[256];
+        std::cout<< "newmsg:";
+        std::cin>>buf;
+        int tmp = write(sockfd, buf, 256);
+        std::cout<<buf<<" Has been written!"<<std::endl;
+        
+        RUNNING=false;
+    }
     close(sockfd);
     return 0;
 }
