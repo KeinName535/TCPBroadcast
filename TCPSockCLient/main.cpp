@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
         char* buf = new char[256];
         std::cout<< "newmsg:";
         std::cin>>buf;
-        int tmp = write(sockfd, buf, 256);
+        int tmp = write(sockfd, buf, strlen(buf));
         std::cout<<buf<<" Has been written!"<<std::endl;
         
         RUNNING=false;

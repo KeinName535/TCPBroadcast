@@ -12,17 +12,22 @@ void error(const char *msg)
     perror(msg);
     exit(1);
 }
+char* gBuff = new char[256];
 
 
 std::vector<int> getQueue(fd_set *fdset, int sockfdC){
+    bzero(gBuff, 256);
 
     std::vector<int> *queue = new std::vector<int>;
     select(sockfdC+1, fdset, nullptr,nullptr,nullptr);
     for (int i = 0; i < FD_SETSIZE-1; i++)
     {
         if(FD_ISSET(i, fdset)){
-            queue->push_back(i);
-            std::cout<<"connected fd ==>"<<i<<std::endl;
+            int n = read(i, gBuff, 256)!=0;
+            // std::cout<<"messagesize: "<<n;
+            if(n!=0){
+                queue->push_back(i);
+                std::cout<<"connected fd ==>   "<<i<<std::endl;}
         }
     }
     return *queue;
@@ -96,16 +101,14 @@ int main(int argc, char *argv[])
 
         
         
-        std::vector<int> queue = getQueue(&tmp, sockfd);
+        std::vector<int> queue = getQueue(&tmp, size);
         
 
         clilen = sizeof(cli_addr);
 
-        std::cout<<queue.size()<<std::endl;
         for (int i = 0; i < queue.size(); i++)
         {
             
-            std::cout<<"for";
         
                 if(queue[i]==sockfd){
 
@@ -127,28 +130,29 @@ int main(int argc, char *argv[])
                     // This send() function sends the 13 bytes of the string to the new socket
                     send(newsockfd, "Hello, world!\n", 13, 0);
                     bzero(buffer,256);
-                    n = read(newsockfd,buffer,255);
-                    if (n < 0){ 
-                        error("ERROR reading from socket");}
+                    n = read(newsockfd,gBuff,255);
+                    if (n <= 0){ 
+                         error("ERROR reading from socket");}
 
-                    std::cout<<"Here is the message:"<<buffer<<"   on:"<<newsockfd<<std::endl;
+                    std::cout<<"Here is the message:"<<gBuff<<"   on:"<<newsockfd<<std::endl;
 
                     size = newsockfd;
+                    std::cout<<"size: "<<size<<std::endl;
                 }else{
-                    bzero(buffer,256);
-                    std::cout<<"here motherfucka ==> " <<queue[i]<<std::endl;
-                    n = recv(i,buffer,sizeof(buffer), 0);
+                    std::cout<<"other socket ==> " <<queue[i]<<std::endl;
+                    n = read(queue[i],gBuff,256);
                     if (n < 0){ 
                         error("ERROR reading from socket");}
                     
-                    std::cout<<buffer;
+                    std::cout<<"message:  "<<gBuff<<"size:" <<strlen(gBuff)<<std::endl;
 
                     for (int j = 0; j < queue.size(); j++)
                     {
                         if(!((queue[j]==queue[i])||(queue[j]==sockfd))){
 
-                            send(queue[j], buffer, 13, 0);
+                            send(queue[j], gBuff, 13, 0);
                         }
+                        std::cout<<"in for loop"<<std::endl;
                     }
                     
 
@@ -157,7 +161,6 @@ int main(int argc, char *argv[])
             
         }
         
-        // inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port)
         
         
         
