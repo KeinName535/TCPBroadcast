@@ -15,7 +15,7 @@ void error(const char *msg)
 char* gBuff = new char[256];
 
 
-std::vector<int> getQueue(fd_set *fdset, int sockfdC){
+std::vector<int> getReadQueue(fd_set *fdset, int sockfdC){
     bzero(gBuff, 256);
 
     std::vector<int> *queue = new std::vector<int>;
@@ -33,7 +33,19 @@ std::vector<int> getQueue(fd_set *fdset, int sockfdC){
     return *queue;
     
 }
+std::vector<int> getWriteQueue(fd_set *fdset, int sockfdC){
 
+    std::vector<int> *queue = new std::vector<int>;
+    for (int i = 0; i < FD_SETSIZE-1; i++)
+    {
+        if(FD_ISSET(i, fdset)){        
+                queue->push_back(i);
+                std::cout<<"connected fd ==>   "<<i<<std::endl;
+        }
+    }
+    return *queue;
+    
+}
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +55,6 @@ int main(int argc, char *argv[])
      fd_set main;
      socklen_t clilen;
      FD_ZERO(&main);
-     char buffer[256];
      struct sockaddr_in serv_addr, cli_addr;
      int n;
      if (argc < 2) {
@@ -101,25 +112,28 @@ int main(int argc, char *argv[])
 
         
         
-        std::vector<int> queue = getQueue(&tmp, size);
-        
+        std::vector<int> readQueue = getReadQueue(&tmp, size);
+        std::vector<int> writeQueue = getWriteQueue(&main, size);
 
         clilen = sizeof(cli_addr);
+        std::cout<<"ReadQueue: "<<readQueue.size()<<std::endl;
+        std::cout<<"WriteQueue: "<<writeQueue.size()<<std::endl;
 
-        for (int i = 0; i < queue.size(); i++)
+
+        for (int i = 0; i < readQueue.size(); i++)
         {
             
         
-                if(queue[i]==sockfd){
+                if(readQueue[i]==sockfd){
 
-                    std::cout<<queue[i]<<std::endl;
+                    std::cout<<readQueue[i]<<std::endl;
                     // This accept() function will write the connecting client's address info 
                     // into the the address structure and the size of that structure is clilen.
                     // The accept() returns a new socket file descriptor for the accepted connection.
                     // So, the original socket file descriptor can continue to be used 
                     // for accepting new connections while the new socker file descriptor is used for
                     // communicating with the connected client.
-                    newsockfd = accept(queue[i], (struct sockaddr *) &cli_addr, &clilen);
+                    newsockfd = accept(readQueue[i], (struct sockaddr *) &cli_addr, &clilen);
                     if (newsockfd < 0){ 
                         error("ERROR on accept");}
                     std::cout<<"connection on main socket"<<std::endl;
@@ -128,8 +142,6 @@ int main(int argc, char *argv[])
                     FD_SET(newsockfd, &main);
 
                     // This send() function sends the 13 bytes of the string to the new socket
-                    send(newsockfd, "Hello, world!\n", 13, 0);
-                    bzero(buffer,256);
                     n = read(newsockfd,gBuff,255);
                     if (n <= 0){ 
                          error("ERROR reading from socket");}
@@ -139,18 +151,18 @@ int main(int argc, char *argv[])
                     size = newsockfd;
                     std::cout<<"size: "<<size<<std::endl;
                 }else{
-                    std::cout<<"other socket ==> " <<queue[i]<<std::endl;
+                    std::cout<<"other socket ==> " <<readQueue[i]<<std::endl;
                     // n = read(queue[i],gBuff,256);
                     // if (n < 0){ 
                     //     error("ERROR reading from socket");}
                     
-                    std::cout<<"message:  "<<gBuff<<"size:" <<strlen(gBuff)<<std::endl;
+                    std::cout<<"message:  "<<gBuff<<"  size:" <<strlen(gBuff)<<std::endl;
 
-                    for (int j = 0; j < queue.size(); j++)
+                    for (int j = 0; j < writeQueue.size(); j++)
                     {
-                        if(!((queue[j]==queue[i])||(queue[j]==sockfd))){
-
-                            send(queue[j], gBuff, 13, 0);
+                        if(!((writeQueue[j]==sockfd)||(writeQueue[j]==readQueue[i]))){
+                            std::cout<<"sending stuff"<<std::endl;
+                            send(writeQueue[j], gBuff, strlen(gBuff), 0);
                         }
                         std::cout<<"in for loop"<<std::endl;
                     }
@@ -161,10 +173,6 @@ int main(int argc, char *argv[])
             
         }
         
-        
-        
-        
-       // RUNNING=false;
     }
     for (int i = 0; i < FD_SETSIZE-1; i++)
         {

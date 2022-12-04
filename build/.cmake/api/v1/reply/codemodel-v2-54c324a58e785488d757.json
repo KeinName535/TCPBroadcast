@@ -96,14 +96,14 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "TCP_Client::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-TCP_Client-Debug-48af8b612ffe4b4ac052.json",
+					"jsonFile" : "target-TCP_Client-Debug-491d403a64f52496bd3f.json",
 					"name" : "TCP_Client",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "TCP_Server::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-TCP_Server-Debug-78894fee63dc60d541fa.json",
+					"jsonFile" : "target-TCP_Server-Debug-64cdc24f9d9366c8752c.json",
 					"name" : "TCP_Server",
 					"projectIndex" : 0
 				},
