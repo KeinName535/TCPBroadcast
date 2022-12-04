@@ -140,9 +140,9 @@ int main(int argc, char *argv[])
                     std::cout<<"size: "<<size<<std::endl;
                 }else{
                     std::cout<<"other socket ==> " <<queue[i]<<std::endl;
-                    n = read(queue[i],gBuff,256);
-                    if (n < 0){ 
-                        error("ERROR reading from socket");}
+                    // n = read(queue[i],gBuff,256);
+                    // if (n < 0){ 
+                    //     error("ERROR reading from socket");}
                     
                     std::cout<<"message:  "<<gBuff<<"size:" <<strlen(gBuff)<<std::endl;
 

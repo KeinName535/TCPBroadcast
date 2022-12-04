@@ -5,7 +5,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-
+#include<thread>
+#include<vector>
 
 void error(const char *msg)
 {
@@ -13,16 +14,39 @@ void error(const char *msg)
     exit(0);
 }
 
+char inBuff[256];
+char outBuff[256];
+
+std::vector<std::string> *inQueue = new std::vector<std::string>;
+
+void inStream(int socket){
+    while(true){
+        int n = 0;
+        n = read(socket, inBuff, 255);
+        if (n > 0) {
+        
+            inQueue->push_back(inBuff);
+            std::cout<<inBuff;
+            }
+    }
+}
+
+
+
+
 int main(int argc, char *argv[])
 {
     int sockfd, portno, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
-    char buffer[256];
+    
+    bzero(inBuff,256);
+    bzero(outBuff,256);
+
 
     if (argc < 3) {
-       std::cerr<<"usage %s hostname port\n"<< argv[0];
+       std::cerr<<"usage "<<argv[0]<< "hostname port\n";
        exit(0);
     }
 
@@ -55,32 +79,18 @@ int main(int argc, char *argv[])
         error("ERROR connecting");}
 
 
-    std::cout<<"Please enter the message: ";
-    bzero(buffer,256);
-    std::cin>>buffer;
-
-
-    n = write(sockfd, buffer, strlen(buffer));
-    if (n < 0){ 
-         error("ERROR writing to socket");}
-
-    bzero(buffer,256);
-    n = read(sockfd, buffer, 255);
-    if (n < 0) {
-         error("ERROR reading from socket");}
-
-
-    std::cout<<buffer;
     bool RUNNING = true;
     while(RUNNING){
-        char* buf = new char[256];
-        std::cout<< "newmsg:";
-        std::cin>>buf;
-        int tmp = write(sockfd, buf, strlen(buf));
-        std::cout<<buf<<" Has been written!"<<std::endl;
+        std::thread input(inStream, sockfd);
+        input.detach();
+        std::cout<<"Please enter the message: ";
+        bzero(outBuff,256);
+        std::cin>>outBuff; 
+        n = write(sockfd, outBuff, strlen(outBuff));
+        if (n < 0){ 
+            error("ERROR writing to socket");}
         
-        RUNNING=false;
-    }
+        }
     close(sockfd);
     return 0;
 }
