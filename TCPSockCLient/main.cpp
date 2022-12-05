@@ -19,7 +19,8 @@ char inBuff[256];
 char outBuff[256];
 
 
-void inStream(int socket, std::ofstream* data){
+void inStream(int socket, std::fstream* data){
+    //system("gnome-terminal -- \"bash -c 'dir'\"");
     while(true){
 
         int n = read(socket, inBuff, 255);
@@ -37,7 +38,7 @@ void inStream(int socket, std::ofstream* data){
 
 int main(int argc, char *argv[])
 {
-    std::ofstream data("data.log");
+    std::fstream data("log.file");
 
     int sockfd, portno, n;
     struct sockaddr_in serv_addr;
@@ -81,11 +82,13 @@ int main(int argc, char *argv[])
     if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         error("ERROR connecting");}
 
+    std::thread input(inStream, sockfd, &data);
+    input.detach();
+    system("gnome-terminal -- \"bash -c 'tail -f ./log.file'\"");
 
     bool RUNNING = true;
     while(RUNNING){
-        std::thread input(inStream, sockfd, &data);
-        input.detach();
+        
         std::cout<<"Please enter the message: ";
         bzero(outBuff,256);
         std::cin>>outBuff; 

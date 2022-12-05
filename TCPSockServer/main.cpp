@@ -24,7 +24,6 @@ std::vector<int> getReadQueue(fd_set *fdset, int sockfdC){
     {
         if(FD_ISSET(i, fdset)){
             int n = read(i, gBuff, 256)!=0;
-            // std::cout<<"messagesize: "<<n;
             if(n!=0){
                 queue->push_back(i);
                 std::cout<<"connected fd ==>   "<<i<<std::endl;}
