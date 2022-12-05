@@ -19,13 +19,13 @@ char inBuff[256];
 char outBuff[256];
 
 
-void inStream(int socket, std::fstream* data){
-    //system("gnome-terminal -- \"bash -c 'dir'\"");
+void inStream(int socket, std::ofstream* data){
     while(true){
 
         int n = read(socket, inBuff, 255);
         if (n > 0) {       
             *data<<inBuff; 
+            std::cout<<"writting stuff"<<std::endl;
             std::cout<<inBuff;
             bzero(inBuff, 256);
 
@@ -38,7 +38,9 @@ void inStream(int socket, std::fstream* data){
 
 int main(int argc, char *argv[])
 {
-    std::fstream data("log.file");
+    std::ofstream file;
+    file.open("new.file", std::ios::app | std::ios::out |std::ios::in);
+    file<<"hi";
 
     int sockfd, portno, n;
     struct sockaddr_in serv_addr;
@@ -82,9 +84,9 @@ int main(int argc, char *argv[])
     if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         error("ERROR connecting");}
 
-    std::thread input(inStream, sockfd, &data);
+    std::thread input(inStream, sockfd, &file);
     input.detach();
-    system("gnome-terminal -- \"bash -c 'tail -f ./log.file'\"");
+    //system("gnome-terminal -- \"bash -c 'tail -f ./log.file'\"");
 
     bool RUNNING = true;
     while(RUNNING){
@@ -98,6 +100,6 @@ int main(int argc, char *argv[])
         
         }
     close(sockfd);
-    data.close();
+    //file.close();
     return 0;
 }
