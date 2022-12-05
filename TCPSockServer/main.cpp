@@ -60,7 +60,7 @@ std::vector<int> getWriteQueue(fd_set *fdset){
 
 /// @brief the main function
 /// @param argc the number of arguments given
-/// @param argv the index[1] is supposed to get the port on which the server listens
+/// @param argv the argv[1] is supposed to get the port on which the server listens
 /// @return returns 0 if everxthing worked
 int main(int argc, char *argv[])
 {
@@ -197,6 +197,7 @@ int main(int argc, char *argv[])
         }
         
     }
+    /// closes all possible sockets to leave no dangling fds which could be exploited and to free memory 
     for (int i = 0; i < FD_SETSIZE-1; i++)
         {
             close(i);
