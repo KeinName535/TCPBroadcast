@@ -98,10 +98,10 @@ int main(int argc, char *argv[])
     bool RUNNING = true;
 
 
-    // This listen() call tells the socket to listen to the incoming connections.
-        // The listen() function places all incoming connection into a backlog queue
-        // until accept() call accepts the connection.
-        // Here, we set the maximum size for the backlog queue to 5.
+    /// This listen() call tells the socket to listen to the incoming connections.
+    /// The listen() function places all incoming connection into a backlog queue
+    /// until accept() call accepts the connection.
+    /// Here, we set the maximum size for the backlog queue to 5.
     listen(sockfd, 4);
 
     int size = sockfd;
@@ -109,8 +109,10 @@ int main(int argc, char *argv[])
         fd_set tmp = main;
 
         
-        
+        /// read Queue saves fds ready to read
         std::vector<int> readQueue = getReadQueue(&tmp, size);
+
+        /// write Queue saves fds ready to write
         std::vector<int> writeQueue = getWriteQueue(&main, size);
 
         clilen = sizeof(cli_addr);
@@ -125,12 +127,12 @@ int main(int argc, char *argv[])
                 if(readQueue[i]==sockfd){
 
                     std::cout<<readQueue[i]<<std::endl;
-                    // This accept() function will write the connecting client's address info 
-                    // into the the address structure and the size of that structure is clilen.
-                    // The accept() returns a new socket file descriptor for the accepted connection.
-                    // So, the original socket file descriptor can continue to be used 
-                    // for accepting new connections while the new socker file descriptor is used for
-                    // communicating with the connected client.
+                    /// This accept() function will write the connecting client's address info 
+                    /// into the the address structure and the size of that structure is clilen.
+                    /// The accept() returns a new socket file descriptor for the accepted connection.
+                    /// So, the original socket file descriptor can continue to be used 
+                    /// for accepting new connections while the new socker file descriptor is used for
+                    /// communicating with the connected client.
                     newsockfd = accept(readQueue[i], (struct sockaddr *) &cli_addr, &clilen);
                     if (newsockfd < 0){ 
                         error("ERROR on accept");}
@@ -139,7 +141,7 @@ int main(int argc, char *argv[])
                     listen(newsockfd, 1);
                     FD_SET(newsockfd, &main);
 
-                    // This send() function sends the 13 bytes of the string to the new socket
+                    /// This send() function sends the 13 bytes of the string to the new socket
                     n = read(newsockfd,gBuff,255);
                     if (n <= 0){ 
                          error("ERROR reading from socket");}
