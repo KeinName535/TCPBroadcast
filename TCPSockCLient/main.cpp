@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
     /// the file which is supposed to be read by the new terminal
     std::ofstream file;
-    file.open("new.file", std::ios::app | std::ios::out |std::ios::in);
+    file.open("data.file", std::ios::app | std::ios::out |std::ios::in);
     file<<"hi";
 
     /// variables which need to be defined
