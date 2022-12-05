@@ -7,6 +7,7 @@
 #include <netdb.h>
 #include<thread>
 #include<vector>
+#include<fstream>
 
 void error(const char *msg)
 {
@@ -17,16 +18,17 @@ void error(const char *msg)
 char inBuff[256];
 char outBuff[256];
 
-std::vector<std::string> *inQueue = new std::vector<std::string>;
 
-void inStream(int socket){
+void inStream(int socket, std::ofstream* data){
     while(true){
-        int n = 0;
-        n = read(socket, inBuff, 255);
-        if (n > 0) {
-        
-            inQueue->push_back(inBuff);
+
+        int n = read(socket, inBuff, 255);
+        if (n > 0) {       
+            *data<<inBuff; 
+            std::cout<<"writting stuff"<<std::endl;
             std::cout<<inBuff;
+            bzero(inBuff, 256);
+
             }
     }
 }
@@ -36,6 +38,10 @@ void inStream(int socket){
 
 int main(int argc, char *argv[])
 {
+    std::ofstream file;
+    file.open("new.file", std::ios::app | std::ios::out |std::ios::in);
+    file<<"hi";
+
     int sockfd, portno, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
@@ -78,11 +84,13 @@ int main(int argc, char *argv[])
     if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         error("ERROR connecting");}
 
+    std::thread input(inStream, sockfd, &file);
+    input.detach();
+    //system("gnome-terminal -- \"bash -c 'tail -f ./log.file'\"");
 
     bool RUNNING = true;
     while(RUNNING){
-        std::thread input(inStream, sockfd);
-        input.detach();
+        
         std::cout<<"Please enter the message: ";
         bzero(outBuff,256);
         std::cin>>outBuff; 
@@ -92,5 +100,6 @@ int main(int argc, char *argv[])
         
         }
     close(sockfd);
+    //file.close();
     return 0;
 }
