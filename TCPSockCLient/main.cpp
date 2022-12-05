@@ -7,6 +7,7 @@
 #include <netdb.h>
 #include<thread>
 #include<vector>
+#include<fstream>
 
 void error(const char *msg)
 {
@@ -17,16 +18,16 @@ void error(const char *msg)
 char inBuff[256];
 char outBuff[256];
 
-std::vector<std::string> *inQueue = new std::vector<std::string>;
 
-void inStream(int socket){
+void inStream(int socket, std::ofstream* data){
     while(true){
-        int n = 0;
-        n = read(socket, inBuff, 255);
-        if (n > 0) {
-        
-            inQueue->push_back(inBuff);
+
+        int n = read(socket, inBuff, 255);
+        if (n > 0) {       
+            *data<<inBuff; 
             std::cout<<inBuff;
+            bzero(inBuff, 256);
+
             }
     }
 }
@@ -36,6 +37,8 @@ void inStream(int socket){
 
 int main(int argc, char *argv[])
 {
+    std::ofstream data("data.log");
+
     int sockfd, portno, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
@@ -81,7 +84,7 @@ int main(int argc, char *argv[])
 
     bool RUNNING = true;
     while(RUNNING){
-        std::thread input(inStream, sockfd);
+        std::thread input(inStream, sockfd, &data);
         input.detach();
         std::cout<<"Please enter the message: ";
         bzero(outBuff,256);
@@ -92,5 +95,6 @@ int main(int argc, char *argv[])
         
         }
     close(sockfd);
+    data.close();
     return 0;
 }

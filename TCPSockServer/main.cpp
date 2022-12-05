@@ -40,7 +40,6 @@ std::vector<int> getWriteQueue(fd_set *fdset, int sockfdC){
     {
         if(FD_ISSET(i, fdset)){        
                 queue->push_back(i);
-                std::cout<<"connected fd ==>   "<<i<<std::endl;
         }
     }
     return *queue;
@@ -64,7 +63,7 @@ int main(int argc, char *argv[])
 
      // create a socket
      // socket(int domain, int type, int protocol)
-     sockfd =  socket(AF_INET, SOCK_STREAM, 0);
+    sockfd =  socket(AF_INET, SOCK_STREAM, 0);
     std::cout<<"socket created "<<sockfd<<std::endl;
 
      if (sockfd < 0) {
@@ -152,21 +151,18 @@ int main(int argc, char *argv[])
                     std::cout<<"size: "<<size<<std::endl;
                 }else{
                     std::cout<<"other socket ==> " <<readQueue[i]<<std::endl;
-                    // n = read(queue[i],gBuff,256);
-                    // if (n < 0){ 
-                    //     error("ERROR reading from socket");}
+                    
                     
                     std::cout<<"message:  "<<gBuff<<"  size:" <<strlen(gBuff)<<std::endl;
 
                     for (int j = 0; j < writeQueue.size(); j++)
                     {
-                        if(!((writeQueue[j]==sockfd)||(writeQueue[j]==readQueue[i]))){
+                        if(!((writeQueue[j]==sockfd))){
                             std::cout<<"sending stuff"<<std::endl;
                             send(writeQueue[j], gBuff, strlen(gBuff), 0);
                         }
-                        std::cout<<"in for loop"<<std::endl;
                     }
-                    
+                    // ||(writeQueue[j]==readQueue[i])
 
                 }
 

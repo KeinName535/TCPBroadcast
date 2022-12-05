@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "TCP_Server"
+			"path" : "TCP_Client"
 		}
 	],
 	"backtrace" : 1,
@@ -26,19 +26,25 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 14,
+				"line" : 15,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 23,
+				"line" : 28,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 21,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 19,
+				"line" : 24,
 				"parent" : 0
 			}
 		]
@@ -50,12 +56,16 @@
 			[
 				{
 					"fragment" : "-g  "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-pthread"
 				}
 			],
 			"includes" : 
 			[
 				{
-					"backtrace" : 3,
+					"backtrace" : 4,
 					"path" : "/datadisk/code/cpp/TcpClientBroadcast/sockpp/include"
 				},
 				{
@@ -81,7 +91,7 @@
 			"id" : "sockpp::@b6a815ae04b1974a6d5c"
 		}
 	],
-	"id" : "TCP_Server::@6890427a1f51a3e7e1df",
+	"id" : "TCP_Client::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -103,6 +113,10 @@
 				"role" : "libraries"
 			},
 			{
+				"fragment" : "-pthread",
+				"role" : "libraries"
+			},
+			{
 				"fragment" : "-lc",
 				"role" : "libraries"
 			},
@@ -113,8 +127,8 @@
 		],
 		"language" : "CXX"
 	},
-	"name" : "TCP_Server",
-	"nameOnDisk" : "TCP_Server",
+	"name" : "TCP_Client",
+	"nameOnDisk" : "TCP_Client",
 	"paths" : 
 	{
 		"build" : ".",
@@ -135,7 +149,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "TCPSockServer/main.cpp",
+			"path" : "TCPSockCLient/main.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

@@ -1,7 +1,7 @@
 [
 {
   "directory": "/datadisk/code/cpp/TcpClientBroadcast/build",
-  "command": "/usr/bin/g++   -I../sockpp/include -Isockpp/generated -I../sockpp/src  -g   -o CMakeFiles/TCP_Client.dir/TCPSockCLient/main.cpp.o -c /datadisk/code/cpp/TcpClientBroadcast/TCPSockCLient/main.cpp",
+  "command": "/usr/bin/g++   -I../sockpp/include -Isockpp/generated -I../sockpp/src  -g   -pthread -o CMakeFiles/TCP_Client.dir/TCPSockCLient/main.cpp.o -c /datadisk/code/cpp/TcpClientBroadcast/TCPSockCLient/main.cpp",
   "file": "/datadisk/code/cpp/TcpClientBroadcast/TCPSockCLient/main.cpp"
 },
 
