@@ -126,6 +126,6 @@ int main(int argc, char *argv[])
     
     /// closes the socket and the fd to leave no dangling fds which could get exploited and use up memory
     close(sockfd);
-    //file.close();
+    file.close();
     return 0;
 }

@@ -184,12 +184,12 @@ int main(int argc, char *argv[])
                     ///or the main socket 
                     for (int j = 0; j < writeQueue.size(); j++)
                     {
-                        if(!((writeQueue[j]==sockfd))){
+                        if(!((writeQueue[j]==sockfd)||(writeQueue[j]==readQueue[i]))){
                         
                             send(writeQueue[j], gBuff, strlen(gBuff), 0);
                         }
                     }
-                    // ||(writeQueue[j]==readQueue[i])
+                    
 
                 }
 
